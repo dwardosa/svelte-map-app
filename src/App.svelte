@@ -14,7 +14,7 @@
 	<!-- The Map was being hidden by the canvas -->
 
 	<Background color='hsla(0, 0%, 10%, 1)'>
-		<DotGrid divisions={30} color='hsla(0, 0%, 100%, 0.5)' />
+		<!-- <DotGrid divisions={30} color='hsla(0, 0%, 100%, 0.1)' /> -->
 	</Background>
 	<Character size={10} />
 	<Text
