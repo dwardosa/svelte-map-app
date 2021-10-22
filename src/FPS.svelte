@@ -26,7 +26,7 @@
 	align='left'
 	baseline='top'
 	x={20}
-	y={20} />
+	y={100} />
 
 <!-- The following allows this component to nest children -->
 <slot></slot>

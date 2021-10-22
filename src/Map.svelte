@@ -3,7 +3,23 @@
 	import ArcGISMap from "@arcgis/core/Map";
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
 	import MapView from "@arcgis/core/views/MapView";
+	import Point from "@arcgis/core/geometry/Point";
 	import { onMount } from "svelte";
+	import { width, height } from './game.js';
+
+	let startX = $width / 2;
+	let startY = $height / 2;
+
+	let mapStartX;
+	let mapStartY;
+	let mapEndX;
+	let mapEndY;
+
+	let mouse = null;
+	let pointer;
+	let view;
+	let mouseDown = false;
+
 
 	onMount(() => {
 		/**
@@ -115,7 +131,40 @@
 		});
 
 		map.addMany([layer1, layer2]);
+
+		// Event Handlers
+		
+		// Setup Drag event listener 
+		view.on("drag", (value) => {
+			// window.alert(JSON.stringify(value));
+
+		})
 	});
+
+
+	function handleMouseMove ({ clientX, clientY }) {
+		mouse = [ clientX, clientY ];
+
+	}
+	
+	function handleMouseDown (ev) {
+		handleMouseMove(ev);
+		
+		// let pt = new 
+		// Point({
+		// 	latitude: 49,
+		// 	longitude: -126
+		// 	});
+
+		// 	// go to the given point
+		// 	view.goTo(pt);
+		mouseDown = true;
+	}
+	
+	function handleMouseUp (ev) {
+		handleMouseMove(ev);
+		mouseDown = false;
+	}
 </script>
 
 <style>
@@ -125,12 +174,19 @@
 		margin: 0;
 		height: 100%;
 		width: 100%;
-		z-index: 9;
+		z-index: 11;
+		opacity: 0.7;
 		top: 0;
 		left: 0;
 		position: absolute;
 	}
 </style>
+
+<!-- Adds action handlers for these events in svelte framework -->
+<svelte:window
+	on:mousedown={handleMouseDown}
+	on:mouseup={handleMouseUp}
+	on:mousemove={handleMouseMove} />
 
 <!-- THis is the div where the map is rendered to -->
 <main>
