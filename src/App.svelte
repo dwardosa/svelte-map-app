@@ -11,8 +11,9 @@
 </script>
 
 <Canvas>
-	<Map></Map>
-	<Background color='hsla(0, 0%, 10%, 0.4)'>
+	<!-- The Map was being hidden by the canvas -->
+
+	<Background color='hsla(0, 0%, 10%, 0.2)'>
 		<DotGrid divisions={30} color='hsla(0, 0%, 100%, 0.5)' />
 	</Background>
 	<Character size={10} />
@@ -24,7 +25,10 @@
 		x={$width - 20}
 		y={$height - 20} />
 	<FPS />
+	<Map></Map>
 </Canvas>
+<!-- Displaying map underneath the canvas 
+<Map></Map> -->
 
 <style>
 	:global(body) {

@@ -125,13 +125,17 @@
 		margin: 0;
 		height: 100%;
 		width: 100%;
+		z-index: 9;
+		top: 0;
+		left: 0;
+		position: absolute;
 	}
 </style>
 
-THis is the di
-<!-- <main>
+<!-- THis is the div where the map is rendered to -->
+<main>
 	<div id="viewDiv" />
-</main> -->
+</main>
 
 <!-- The following allows this component to nest children -->
 <slot></slot>

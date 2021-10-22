@@ -94,16 +94,22 @@
 		};
 	}
 </script>
-
-<!-- The ArgGIS JS API uses a DIV with the ID of viewDiv to output the map to, here I have tried it nested in the Canvas module,
-and also setting id directly on canvas module -->
+<!-- 
+The ArgGIS JS API uses a DIV with the ID of viewDiv to output the map to, here I have tried it nested in the Canvas module,
+and also setting id directly on -->
 <!-- <div id="viewDiv" /> -->
-<canvas
+<!-- <canvas
 	bind:this={canvas}
 	width={$width * $pixelRatio}
 	height={$height * $pixelRatio}
 	style="width: {$width}px; height: {$height}px;"
-	id="viewDiv"
+> -->
+
+<canvas
+	bind:this={canvas}
+	width={$width * $pixelRatio}
+	height={$height * $pixelRatio}
+	style="width: {$width}px; height: {$height}px; z-index: 10; position: absolute;"
 >
 
 </canvas>
