@@ -8,6 +8,14 @@
 	import Text from './Text.svelte';
 	import FPS from './FPS.svelte';
 	import Map from './Map.svelte';
+
+	import { getLocationData, getNationalAverageData } from './data/data';
+
+	getLocationData(-4.1427, 50.3755, data => {
+		console.log(data);
+	});
+
+	console.log(getNationalAverageData());
 </script>
 
 <Canvas>
