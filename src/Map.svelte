@@ -4,7 +4,7 @@
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
 	import MapView from "@arcgis/core/views/MapView";
 	import Point from "@arcgis/core/geometry/Point";
-	import ScreenPoint from "@arcgis/core/geometry"
+	import ScreenPoint from "@arcgis/core/geometry";
 	import { onMount } from "svelte";
 	import { width, height } from './game.js';
 
