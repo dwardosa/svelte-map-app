@@ -4,6 +4,7 @@
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
 	import MapView from "@arcgis/core/views/MapView";
 	import Point from "@arcgis/core/geometry/Point";
+	import ScreenPoint from "@arcgis/core/geometry"
 	import { onMount } from "svelte";
 	import { width, height } from './game.js';
 
@@ -137,6 +138,7 @@
 		// Setup Drag event listener 
 		view.on("drag", (value) => {
 			// window.alert(JSON.stringify(value));
+			stopPropagation();
 
 		})
 	});
@@ -144,7 +146,15 @@
 
 	function handleMouseMove ({ clientX, clientY }) {
 		mouse = [ clientX, clientY ];
+	}
 
+	// Creating a ScreenPoint based of clients X, Y values passed in the event
+	// 
+	function handleMouseMoveComplete ({ clientX, clientY }) {
+		mouse = [ clientX, clientY ];
+		window.alert(JSON.stringify(mouse));
+		let sp = new ScreenPoint(clientX, clientY);
+		view.goTo(sp);
 	}
 	
 	function handleMouseDown (ev) {
@@ -162,7 +172,7 @@
 	}
 	
 	function handleMouseUp (ev) {
-		handleMouseMove(ev);
+		handleMouseMoveComplete(ev);
 		mouseDown = false;
 	}
 </script>
