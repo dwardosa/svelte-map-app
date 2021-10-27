@@ -4,7 +4,6 @@
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
 	import MapView from "@arcgis/core/views/MapView";
 	import Point from "@arcgis/core/geometry/Point";
-	import ScreenPoint from "@arcgis/core/geometry";
 	import { onMount } from "svelte";
 	import { width, height } from './game.js';
 
@@ -15,6 +14,9 @@
 	let mapStartY;
 	let mapEndX;
 	let mapEndY;
+
+	export let latitude;
+	export let longitude;
 
 	let mouse = null;
 	let pointer;
@@ -136,45 +138,55 @@
 		// Event Handlers
 		
 		// Setup Drag event listener 
-		view.on("drag", (value) => {
-			// window.alert(JSON.stringify(value));
-			stopPropagation();
-
+		var viewDrag = view.on("drag", (value) => {
+			window.alert(JSON.stringify(value));
+			viewDrag.remove();
+			view.stopPropagation();
 		})
+
+		var viewClick = view.on("click", (value) => {
+			window.alert(JSON.stringify(value));
+			latitude = value.latitude;
+			longitude = value.longitude;
+			// Export values for Metric sustainability API to
+			// get for that long,lat location
+
+		} )
 	});
 
+		function handleMouseMove ({ clientX, clientY }) {
+			mouse = [ clientX, clientY ];
+		}
 
-	function handleMouseMove ({ clientX, clientY }) {
-		mouse = [ clientX, clientY ];
-	}
+		// Creating a ScreenPoint based of clients X, Y values passed in the event
+		function handleMouseMoveComplete({ clientX, clientY }) {
+			mouse = [ clientX, clientY ];
+			window.alert(JSON.stringify(view));
+			var point = view.toMap({ x: clientX, y: clientY });
+			view.goTo(point);
+		}
 
-	// Creating a ScreenPoint based of clients X, Y values passed in the event
-	// 
-	function handleMouseMoveComplete ({ clientX, clientY }) {
-		mouse = [ clientX, clientY ];
-		window.alert(JSON.stringify(mouse));
-		let sp = new ScreenPoint(clientX, clientY);
-		view.goTo(sp);
-	}
-	
-	function handleMouseDown (ev) {
-		handleMouseMove(ev);
 		
-		// let pt = new 
-		// Point({
-		// 	latitude: 49,
-		// 	longitude: -126
-		// 	});
+		function handleMouseDown (ev) {
+			handleMouseMove(ev);
+			
+			// let pt = new 
+			// Point({
+			// 	latitude: 49,
+			// 	longitude: -126
+			// 	});
 
-		// 	// go to the given point
-		// 	view.goTo(pt);
-		mouseDown = true;
-	}
+			// 	// go to the given point
+			// 	view.goTo(pt);
+			mouseDown = true;
+		}
+		
+		function handleMouseUp (ev) {
+			handleMouseMoveComplete(ev);
+			mouseDown = false;
+		}
+
 	
-	function handleMouseUp (ev) {
-		handleMouseMoveComplete(ev);
-		mouseDown = false;
-	}
 </script>
 
 <style>
