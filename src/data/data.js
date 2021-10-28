@@ -2,16 +2,19 @@ import axios from "axios";
 import * as json from './energy-by-region.json';
 
 const { data } = json;
-
 const year = "2019";
 
-export function getLocationData(longtitude, latitude, callback) {
-    getLocationAddress(longtitude, latitude)
-        .then(res => {
-            const { city, state_district } = res.address;
-            const locationData = data.find(i => i.LA === city && i.Year === year);
-            callback(locationData);
-        });
+export function getLocationData(longtitude, latitude) {
+    return new Promise((resolve, reject) => {
+        getLocationAddress(longtitude, latitude)
+            .then(address => {
+                const { city, state_district } = address;
+                const locationData = data.find(i => i.LA === city && i.Year === year);
+
+                resolve(locationData);
+            })
+            .catch(reject);
+    });
 }
 
 export function getNationalAverageData() {
@@ -20,7 +23,7 @@ export function getNationalAverageData() {
 
 async function getLocationAddress(longtitude, latitude) {
     const res = await axios.get(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longtitude}&zoom=18&addressdetails=1`);
-    return res.data;
+    return res.data.address;
 }
 
 // "Year": "2014",

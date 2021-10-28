@@ -11,11 +11,13 @@
 
 	import { getLocationData, getNationalAverageData } from './data/data';
 
-	getLocationData(-4.1427, 50.3755, data => {
-		console.log(data);
-	});
-
-	console.log(getNationalAverageData());
+	getLocationData(-4.1427, 50.3755)
+		.then(locationData => {
+			console.log(locationData);
+		});
+	
+	const nationalData = getNationalAverageData();
+	console.log(nationalData);
 </script>
 
 <Canvas>
