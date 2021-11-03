@@ -1,4 +1,5 @@
 <script>
+	import Statistics from './Statistics.svelte'
 	import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 	import ArcGISMap from "@arcgis/core/Map";
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
@@ -138,16 +139,17 @@
 		// Event Handlers
 		
 		// Setup Drag event listener 
-		var viewDrag = view.on("drag", (value) => {
-			window.alert(JSON.stringify(value));
-			viewDrag.remove();
-			view.stopPropagation();
-		})
+		// var viewDrag = view.on("drag", (value) => {
+		// 	window.alert(JSON.stringify(value));
+		// 	viewDrag.remove();
+		// 	view.stopPropagation();
+		// })
 
 		var viewClick = view.on("click", (value) => {
 			window.alert(JSON.stringify(value));
 			latitude = value.latitude;
 			longitude = value.longitude;
+			window.alert(`Latitude: ${latitude} Longitude: ${longitude}`);
 			// Export values for Metric sustainability API to
 			// get for that long,lat location
 
@@ -161,9 +163,9 @@
 		// Creating a ScreenPoint based of clients X, Y values passed in the event
 		function handleMouseMoveComplete({ clientX, clientY }) {
 			mouse = [ clientX, clientY ];
-			window.alert(JSON.stringify(view));
-			var point = view.toMap({ x: clientX, y: clientY });
-			view.goTo(point);
+		//	window.alert(JSON.stringify(view));
+			// var point = view.toMap({ x: clientX, y: clientY });
+			// view.goTo(point);
 		}
 
 		
@@ -214,6 +216,11 @@
 <main>
 	<div id="viewDiv" />
 </main>
+
+<Statistics>
+	longitude = longitude
+	latitude = latitude
+</Statistics>
 
 <!-- The following allows this component to nest children -->
 <slot></slot>
