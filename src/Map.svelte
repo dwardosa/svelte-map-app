@@ -148,14 +148,12 @@
 		})
 
 		var viewClick = view.on("click", (value) => {
-			// window.alert(JSON.stringify(value));
-			latitude = value.mapPoint.y;
-			longitude = value.mapPoint.x;
-			// Export values for Metric sustainability API to
-			// get for that long,lat location
+			// Can do stuff on view click event
 
 		} )
 	});
+	// Need to work out some acceleration
+	// Maybe import the characters location and compare coords
 		function moveMap(x, y) {
 			var point = view.toMap({ x: x, y: y });
 			latitude = point.y;
@@ -172,9 +170,8 @@
 
 			if(mouseDown)
 			{
-				moveMap(clientX, clientY)
-				// if(difference(startX, clientX) > 20 || difference(startY, clientY) > 20)
-				// 	moveMap(clientX, clientY)
+				if(difference(startX, clientX) > 20 || difference(startY, clientY) > 20)
+					moveMap(clientX, clientY)
 			}
 
 		}
