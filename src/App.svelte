@@ -8,6 +8,8 @@
 	import Text from './Text.svelte';
 	import FPS from './FPS.svelte';
 	import Map from './Map.svelte';
+	import longitude from './Map.svelte';
+	import latitude from './Map.svelte';
 
 	import { getLocationData, getNationalAverageData } from './data/data';
 
@@ -34,11 +36,53 @@
 		baseline='bottom'
 		x={$width - 20}
 		y={$height - 20} />
+	<Text
+		text='National Averages:'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={200} />
+	<Text
+		text='All fuel domestic: {nationalData.All_fuels_Domestic}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={220} />
+	<Text
+		text='Petroleum domestic: ${nationalData.Petroleum_Domestic}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={240} />
+	<Text
+		text='Petroleum domestic: {nationalData.Petroleum_Domestic}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={260} />
+	<Text
+		text='Gas domestic: {nationalData.Gas_Domestic}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={280} />
+	<Text
+		text='Electricity domestic: {nationalData.Electricity_Domestic}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={300} />
+
 	<FPS />
 	<Map></Map>
 </Canvas>
-<!-- Displaying map underneath the canvas 
-<Map></Map> -->
+
 
 <style>
 	:global(body) {
