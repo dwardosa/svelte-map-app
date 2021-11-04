@@ -3,11 +3,8 @@
     import { getLocationData, getNationalAverageData } from './data/data'    
 
     let longitude = 0;
-    $: onChange(longitude)
     let latitude = 0;
-    $: onChange(latitude)
     let text = `Longitude: ${longitude} Latitude: ${latitude}`;
-    $: onChange(text)
 
 
 </script>

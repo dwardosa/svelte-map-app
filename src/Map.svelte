@@ -1,4 +1,5 @@
 <script>
+	import { createEventDispatcher } from 'svelte';
 	import Statistics from './Statistics.svelte'
 	import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 	import ArcGISMap from "@arcgis/core/Map";
@@ -139,17 +140,16 @@
 		// Event Handlers
 		
 		// Setup Drag event listener 
-		// var viewDrag = view.on("drag", (value) => {
-		// 	window.alert(JSON.stringify(value));
-		// 	viewDrag.remove();
-		// 	view.stopPropagation();
-		// })
+		var viewDrag = view.on("drag", (value) => {
+			// window.alert(JSON.stringify(value));
+			// viewDrag.remove();
+			// view.stopPropagation();
+		})
 
 		var viewClick = view.on("click", (value) => {
-			window.alert(JSON.stringify(value));
-			latitude = value.latitude;
-			longitude = value.longitude;
-			window.alert(`Latitude: ${latitude} Longitude: ${longitude}`);
+			// window.alert(JSON.stringify(value));
+			latitude = value.mapPoint.y;
+			longitude = value.mapPoint.x;
 			// Export values for Metric sustainability API to
 			// get for that long,lat location
 
@@ -218,8 +218,8 @@
 </main>
 
 <Statistics>
-	longitude = longitude
-	latitude = latitude
+	longitude = "45.2"
+	latitude = "60.1"
 </Statistics>
 
 <!-- The following allows this component to nest children -->
