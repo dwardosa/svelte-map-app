@@ -1,6 +1,5 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import Statistics from './Statistics.svelte'
 	import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 	import ArcGISMap from "@arcgis/core/Map";
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
@@ -17,9 +16,11 @@
 	let mapEndX;
 	let mapEndY;
 
+	// Binded to in App.svelte
 	export let latitude;
 	export let longitude;
 
+	// Matrix of mouse screen coordinates
 	let mouse = null;
 	let pointer;
 	let view;
@@ -34,7 +35,7 @@
 			basemap: "gray-vector",
 		});
 
-		const view = new MapView({
+		 view = new MapView({
 			map,
 			container: "viewDiv",
 			extent: {
@@ -160,12 +161,12 @@
 			mouse = [ clientX, clientY ];
 		}
 
-		// Creating a ScreenPoint based of clients X, Y values passed in the event
+		// Creating a ScreenPoint based of clients X, Y values passed in the event and moving map
 		function handleMouseMoveComplete({ clientX, clientY }) {
 			mouse = [ clientX, clientY ];
-		//	window.alert(JSON.stringify(view));
-			// var point = view.toMap({ x: clientX, y: clientY });
-			// view.goTo(point);
+			// window.alert(JSON.stringify(mouse));
+			var point = view.toMap({ x: clientX, y: clientY });
+			view.goTo(point);
 		}
 
 		
@@ -216,11 +217,6 @@
 <main>
 	<div id="viewDiv" />
 </main>
-
-<Statistics>
-	longitude = "45.2"
-	latitude = "60.1"
-</Statistics>
 
 <!-- The following allows this component to nest children -->
 <slot></slot>
