@@ -8,8 +8,7 @@
 	import Text from './Text.svelte';
 	import FPS from './FPS.svelte';
 	import Map from './Map.svelte';
-	import longitude from './Map.svelte';
-	import latitude from './Map.svelte';
+
 
 	import { getLocationData, getNationalAverageData } from './data/data';
 
@@ -20,6 +19,9 @@
 	
 	const nationalData = getNationalAverageData();
 	console.log(nationalData);
+
+	let longitude = '';
+	let latitude = '';
 </script>
 
 <Canvas>
@@ -37,6 +39,20 @@
 		x={$width - 20}
 		y={$height - 20} />
 	<Text
+		text='Longitude: {longitude}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={140} />
+	<Text
+		text='Latitude: {latitude}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={160} />
+	<Text
 		text='National Averages:'
 		fontSize={12}
 		align='left'
@@ -51,7 +67,7 @@
 		x={20}
 		y={220} />
 	<Text
-		text='Petroleum domestic: ${nationalData.Petroleum_Domestic}'
+		text='Petroleum domestic: {nationalData.Petroleum_Domestic}'
 		fontSize={12}
 		align='left'
 		baseline='bottom'
@@ -80,7 +96,7 @@
 		y={300} />
 
 	<FPS />
-	<Map></Map>
+	<Map bind:longitude bind:latitude></Map>
 </Canvas>
 
 
