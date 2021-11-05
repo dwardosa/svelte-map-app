@@ -2,6 +2,7 @@
 	import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 	import ArcGISMap from "@arcgis/core/Map";
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
+	import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 	import MapView from "@arcgis/core/views/MapView";
 	import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
 	import esriConfig from "@arcgis/core/config";
@@ -34,20 +35,30 @@
 		/**
 		 * Initialize application
 		 */
-		 const featureLayerUrl = "https://api.os.uk/maps/vector/v1/vts?key=YkfoTGHpgZueZ0ZbqzgVAphuc0yjUUeK";
+		// BaseMap Doesnt work? 
+		 //const featureLayerUrl = 'https://api.os.uk/maps/vector/v1/vts';
+		 // 
+		 const featureLayerUrl = 'https://api.os.uk/maps/vector/v1/vts/boundaries';
 		 const apiKey = "YkfoTGHpgZueZ0ZbqzgVAphuc0yjUUeK";
 
 		esriConfig.request.interceptors.push({
 		// set the `urls` property to the URL of the FeatureLayer so that this
 		// interceptor only applies to requests made to the FeatureLayer URL
 		urls: featureLayerUrl,
+		headers: {    "key": apiKey  },
 		// use the BeforeInterceptorCallback to check if the query of the
 		// FeatureLayer has a maxAllowableOffset property set.
 		// if so, then set the maxAllowableOffset to 0
 		before: function(params) {
+
+			if(! params.requestOptions.query ) {
+				params.requestOptions.query = {};
+			}
+
+			// params.requestOptions.query.key = apiKey;
+			// params.requestOptions.query.srs = 3857;
+
 			if (params.requestOptions.query.maxAllowableOffset) {
-				params.requestOptions.query.key = apiKey;
-				params.requestOptions.query.srs = 3857;
 				params.requestOptions.query.maxAllowableOffset = 0;
 			}
 		},
@@ -72,13 +83,17 @@
         view = new MapView({
           container: "viewDiv",
           map: map,
-          zoom: 13,
-          center: [ -2.968, 54.425 ],
+          zoom: 10,
+          center: new Point({
+            x: 337297,
+            y: 503995,
+            spatialReference: new SpatialReference({ wkid: 27700 })
+          }),
           constraints: {
-            minZoom: 6,
-            maxZoom: 18,
+            minZoom: 2,
+            maxZoom: 15,
             rotationEnabled: false
-            }
+          }
         });
 
 	
