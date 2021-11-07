@@ -3,22 +3,11 @@
 
 	import Canvas from './Canvas.svelte';
 	import Background from './Background.svelte';
-	import DotGrid from './DotGrid.svelte';
 	import Character from './Character.svelte';
 	import Text from './Text.svelte';
 	import FPS from './FPS.svelte';
 	import Map from './Map.svelte';
-
-
-	import { getLocationData, getNationalAverageData } from './data/data';
-
-	getLocationData(-4.1427, 50.3755)
-		.then(locationData => {
-			console.log(locationData);
-		});
-	
-	const nationalData = getNationalAverageData();
-	console.log(nationalData);
+	import Graphs from './Graphs.svelte';
 
 	let longitude = '';
 	let latitude = '';
@@ -52,49 +41,9 @@
 		baseline='bottom'
 		x={20}
 		y={160} />
-	<Text
-		text='National Averages:'
-		fontSize={12}
-		align='left'
-		baseline='bottom'
-		x={20}
-		y={200} />
-	<Text
-		text='All fuel domestic: {nationalData.All_fuels_Domestic}'
-		fontSize={12}
-		align='left'
-		baseline='bottom'
-		x={20}
-		y={220} />
-	<Text
-		text='Petroleum domestic: {nationalData.Petroleum_Domestic}'
-		fontSize={12}
-		align='left'
-		baseline='bottom'
-		x={20}
-		y={240} />
-	<Text
-		text='Petroleum domestic: {nationalData.Petroleum_Domestic}'
-		fontSize={12}
-		align='left'
-		baseline='bottom'
-		x={20}
-		y={260} />
-	<Text
-		text='Gas domestic: {nationalData.Gas_Domestic}'
-		fontSize={12}
-		align='left'
-		baseline='bottom'
-		x={20}
-		y={280} />
-	<Text
-		text='Electricity domestic: {nationalData.Electricity_Domestic}'
-		fontSize={12}
-		align='left'
-		baseline='bottom'
-		x={20}
-		y={300} />
-
+	<Graphs 
+		longitude={-4.1427} 
+		latitude={50.3755} />
 	<FPS />
 	<Map bind:longitude bind:latitude></Map>
 </Canvas>
