@@ -1,0 +1,43 @@
+<script>
+	import Graph from './Graph.svelte';
+    import { getLocationData, getNationalAverageData } from './data/data';
+
+	export let longitude;
+	export let latitude;
+
+    let locationData;
+    getLocationData(longitude, latitude)
+        .then(res => {
+            locationData = res;
+        });
+
+    const nationalData = getNationalAverageData();
+</script>
+
+<Graph
+    title='Bioenergy Usage:'
+    yPosition={20}
+    localData={locationData?.percentageBioenergy}
+    nationalData={nationalData.percentageBioenergy} />
+<Graph
+    title='Coal Usage:'
+    yPosition={90}
+    localData={locationData?.percentageCoal}
+    nationalData={nationalData.percentageCoal} />
+<Graph
+    title='Electricity Usage:'
+    yPosition={160}
+    localData={locationData?.percentageElectricity}
+    nationalData={nationalData.percentageElectricity} />
+<Graph
+    title='Gas Usage:'
+    yPosition={230}
+    localData={locationData?.percentageGas}
+    nationalData={nationalData.percentageGas} />
+<Graph
+    title='Petroleum Usage:'
+    yPosition={300}
+    localData={locationData?.percentagePetroleum}
+    nationalData={nationalData.percentagePetroleum} />
+
+<slot></slot>
