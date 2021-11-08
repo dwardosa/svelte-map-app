@@ -10,14 +10,18 @@
 	let startX = $width / 2;
 	let startY = $height / 2;
 
+	let moveSpeed = 0.2
+
 	let mapStartX;
 	let mapStartY;
 	let mapEndX;
 	let mapEndY;
 
+	// Binded to in App.svelte
 	export let latitude;
 	export let longitude;
 
+	// Matrix of mouse screen coordinates
 	let mouse = null;
 	let pointer;
 	let view;
@@ -32,7 +36,7 @@
 			basemap: "gray-vector",
 		});
 
-		const view = new MapView({
+		 view = new MapView({
 			map,
 			container: "viewDiv",
 			extent: {
@@ -139,51 +143,60 @@
 		
 		// Setup Drag event listener 
 		var viewDrag = view.on("drag", (value) => {
-			window.alert(JSON.stringify(value));
 			viewDrag.remove();
 			view.stopPropagation();
 		})
 
 		var viewClick = view.on("click", (value) => {
-			window.alert(JSON.stringify(value));
-			latitude = value.latitude;
-			longitude = value.longitude;
-			// Export values for Metric sustainability API to
-			// get for that long,lat location
+			// Can do stuff on view click event
 
 		} )
 	});
+	// Need to work out some acceleration
+	// Maybe import the characters location and compare coords
+		function moveMap(x, y) {
+			var point = view.toMap({ x: x, y: y });
+			latitude = point.y;
+			longitude = point.x;
+			view.goTo(point);
+		}
+
+		function difference(a, b) { 
+			return Math.abs(a - b); 
+		}
 
 		function handleMouseMove ({ clientX, clientY }) {
 			mouse = [ clientX, clientY ];
+
+			if(mouseDown)
+			{
+				if(difference(startX, clientX) > 20 || difference(startY, clientY) > 20)
+					moveMap(clientX, clientY)
+			}
+
 		}
 
-		// Creating a ScreenPoint based of clients X, Y values passed in the event
+		// Creating a ScreenPoint based of clients X, Y values passed in the event and moving map
 		function handleMouseMoveComplete({ clientX, clientY }) {
 			mouse = [ clientX, clientY ];
-			window.alert(JSON.stringify(view));
+			// window.alert(JSON.stringify(mouse));
+			let goToX = clientX + (clientX * moveSpeed);
+			let goToY = clientY + (clientY * moveSpeed);
 			var point = view.toMap({ x: clientX, y: clientY });
 			view.goTo(point);
 		}
 
 		
-		function handleMouseDown (ev) {
-			handleMouseMove(ev);
-			
-			// let pt = new 
-			// Point({
-			// 	latitude: 49,
-			// 	longitude: -126
-			// 	});
-
-			// 	// go to the given point
-			// 	view.goTo(pt);
+		function handleMouseDown ({ clientX, clientY }) {
 			mouseDown = true;
+			startX = clientX;
+			startY = clientY;
+			handleMouseMove({ clientX, clientY });
 		}
 		
 		function handleMouseUp (ev) {
-			handleMouseMoveComplete(ev);
 			mouseDown = false;
+			handleMouseMoveComplete(ev);
 		}
 
 	

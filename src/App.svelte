@@ -3,11 +3,14 @@
 
 	import Canvas from './Canvas.svelte';
 	import Background from './Background.svelte';
-	import DotGrid from './DotGrid.svelte';
 	import Character from './Character.svelte';
 	import Text from './Text.svelte';
 	import FPS from './FPS.svelte';
 	import Map from './Map.svelte';
+	import Graphs from './Graphs.svelte';
+
+	let longitude = '';
+	let latitude = '';
 </script>
 
 <Canvas>
@@ -24,11 +27,27 @@
 		baseline='bottom'
 		x={$width - 20}
 		y={$height - 20} />
+	<Text
+		text='Longitude: {longitude}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={140} />
+	<Text
+		text='Latitude: {latitude}'
+		fontSize={12}
+		align='left'
+		baseline='bottom'
+		x={20}
+		y={160} />
+	<Graphs 
+		longitude={-4.1427} 
+		latitude={50.3755} />
 	<FPS />
-	<Map></Map>
+	<Map bind:longitude bind:latitude></Map>
 </Canvas>
-<!-- Displaying map underneath the canvas 
-<Map></Map> -->
+
 
 <style>
 	:global(body) {
