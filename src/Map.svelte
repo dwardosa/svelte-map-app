@@ -132,15 +132,13 @@
 			// Project our point to another spatial refence using  well-known ID of Spatial refeernce scheme WGS84
 			let outSpatialReference = {
 					wkid: 4326
-					};
-					
+					};				
 			let projectedPoint = projection.project(point, outSpatialReference);
 
 			coordinateFormatter.load().then((value) => {
 				// Returned in format eg  55.94N 003.16W
 				// https://developers.arcgis.com/javascript/3/jsapi/esri.geometry.coordinateformatter-amd.html#tolatitudelongitude
 				let latLongString = coordinateFormatter.toLatitudeLongitude(projectedPoint, 'dd', 2);
-				window.alert(latLongString);
 				// We need to convert this to pure decimal represntation, ie S and W are negatives
 				let latLongArray = latLongString.split(" ");
 				let latString = latLongArray[0].slice(0, latLongArray[0].length-1)
@@ -178,12 +176,7 @@
 		// Creating a ScreenPoint based of clients X, Y values passed in the event and moving map
 		function handleMouseMoveComplete({ clientX, clientY }) {
 			mouse = [ clientX, clientY ];
-			// window.alert(JSON.stringify(mouse));
-			let goToX = clientX + (clientX * moveSpeed);
-			let goToY = clientY + (clientY * moveSpeed);
-			var point = view.toMap({ x: goToX, y: goToY });
-			updateLatLong(point);
-			view.goTo(point);
+			moveMap(clientX, clientY)
 		}
 
 
