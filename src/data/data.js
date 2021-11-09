@@ -6,23 +6,25 @@ const year = "2019";
 
 export async function getLocationData(longitude, latitude) {
     try {
-            const address = await getLocationAddress(longitude, latitude);
+        const address = await getLocationAddress(longitude, latitude);
         const { county, state_district, city } = address;
+
         let locationData = data.find(i => i.LA === city && i.Year === year);
+        let location = city;
 
         // Adding a fall back to wider county if no city data found
-        if (typeof locationData == "undefined")
-        {
+        if (typeof locationData == "undefined") {
             locationData = data.find(i => i.LA === county && i.Year === year);
+            location = county;
         }
 
         // Adding a fall back to wider Region if no county data found
-        if (typeof locationData == "undefined")
-        {
+        if (typeof locationData == "undefined") {
             locationData = data.find(i => i.Region === state_district && i.Year === year);
+            location = state_district;
         }
         
-        return formatData(locationData, city);
+        return formatData(locationData, location);
 
     } catch(err) {
         return formatData(null, null);
@@ -69,8 +71,6 @@ function formatData(data, location) {
         percentageElectricity,
         percentageBioenergy
     };
-
-    console.log(formattedData);
 
     return formattedData;
 }

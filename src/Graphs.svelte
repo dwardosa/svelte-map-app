@@ -16,18 +16,35 @@
 
     nationalData = getNationalAverageData();
 
+    const throttleRequestMs = 5000;
+    let lastRequestTime = null;
+    
     let timeout;
 	afterUpdate(() => {
+        // Cancel any waiting request
         if (timeout) {
             clearTimeout(timeout);
         }
+        // If it's been longer than the wait period get the data straight away
+        const remainingWaitTime = throttleRequestMs - (new Date() - lastRequestTime);
+        if (lastRequestTime === null || remainingWaitTime <= 0) {
+            getData();
+            lastRequestTime = new Date();
+            return;
+        }
+        // Otherwise wait for the remaining amount of time
         timeout = setTimeout(() => {
-            getLocationData(longitude, latitude)
-                .then(res => {
-                    locationData = res;
-                });
-        }, 5000);
+            getData();
+            lastRequestTime = new Date();
+        }, remainingWaitTime);
     })
+
+    function getData() {
+        getLocationData(longitude, latitude)
+            .then(res => {
+                locationData = res;
+            });
+    }
 
 </script>
 
