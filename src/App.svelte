@@ -2,6 +2,10 @@
 	import { width, height } from './game.js';
 
 	import Canvas from './Canvas.svelte';
+	import Content from "./Content.svelte";
+	import Modal from "./Modal.svelte";
+	import Popup from "./Popup.svelte";
+	import { modal } from "./stores.js";
 	import Background from './Background.svelte';
 	import Character from './Character.svelte';
 	import Text from './Text.svelte';
@@ -12,6 +16,11 @@
 	let longitude = -2.968;
 	let latitude = 54.425;
 </script>
+
+<!-- Popup Components -->
+<Modal show={$modal}>
+	<Content />
+</Modal>
 
 <Canvas>
 	<!-- The Map was being hidden by the canvas -->
