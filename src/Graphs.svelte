@@ -9,37 +9,32 @@
     let locationData;
     let nationalData;
 
-    getLocationData(longitude, latitude)
-        .then(res => {
-            locationData = res;
-        });
-
-    nationalData = getNationalAverageData();
-
     const throttleRequestMs = 5000;
     let lastRequestTime = null;
+    let requestTimeout;
+
+    getLocalData();
+    nationalData = getNationalAverageData();
     
-    let timeout;
 	afterUpdate(() => {
         // Cancel any waiting request
-        if (timeout) {
-            clearTimeout(timeout);
+        if (requestTimeout) {
+            clearTimeout(requestTimeout);
         }
         // If it's been longer than the wait period get the data straight away
         const remainingWaitTime = throttleRequestMs - (new Date() - lastRequestTime);
         if (lastRequestTime === null || remainingWaitTime <= 0) {
-            getData();
-            lastRequestTime = new Date();
+            getLocalData();
             return;
         }
         // Otherwise wait for the remaining amount of time
-        timeout = setTimeout(() => {
-            getData();
-            lastRequestTime = new Date();
+        requestTimeout = setTimeout(() => {
+            getLocalData();
         }, remainingWaitTime);
     })
 
-    function getData() {
+    function getLocalData() {
+        lastRequestTime = new Date();
         getLocationData(longitude, latitude)
             .then(res => {
                 locationData = res;
