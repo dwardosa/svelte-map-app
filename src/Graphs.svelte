@@ -16,11 +16,17 @@
 
     nationalData = getNationalAverageData();
 
+    let timeout;
 	afterUpdate(() => {
-        getLocationData(longitude, latitude)
-        .then(res => {
-            locationData = res;
-        });
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => {
+            getLocationData(longitude, latitude)
+                .then(res => {
+                    locationData = res;
+                });
+        }, 5000);
     })
 
 </script>
