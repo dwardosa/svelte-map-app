@@ -6,7 +6,6 @@ const year = "2019";
 
 export async function getLocationData(longitude, latitude) {
     const address = await getLocationAddress(longitude, latitude);
-    window.alert(JSON.stringify(address));
     const { county, state_district, city } = address;
     let locationData = data.find(i => i.LA === city && i.Year === year);
 
@@ -15,7 +14,6 @@ export async function getLocationData(longitude, latitude) {
     {
         locationData = data.find(i => i.LA === county && i.Year === year);
         return formatData(locationData, county);
-
     }
 
     // Adding a fall back to wider Region if no county data found
@@ -23,7 +21,6 @@ export async function getLocationData(longitude, latitude) {
     {
         locationData = data.find(i => i.Region === state_district && i.Year === year);
         return formatData(locationData, state_district);
-
     }
     
     return formatData(locationData, city);

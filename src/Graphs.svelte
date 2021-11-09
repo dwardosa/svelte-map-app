@@ -1,4 +1,5 @@
 <script>
+    import { onMount, afterUpdate } from 'svelte';
 	import Graph from './Graph.svelte';
     import { getLocationData, getNationalAverageData } from './data/data';
 
@@ -6,12 +7,22 @@
 	export let latitude;
 
     let locationData;
+    let nationalData;
+
     getLocationData(longitude, latitude)
         .then(res => {
             locationData = res;
         });
 
-    const nationalData = getNationalAverageData();
+    nationalData = getNationalAverageData();
+
+	afterUpdate(() => {
+        getLocationData(longitude, latitude)
+        .then(res => {
+            locationData = res;
+        });
+    })
+
 </script>
 
 <Graph
