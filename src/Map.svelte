@@ -2,6 +2,8 @@
 	import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 	import ArcGISMap from "@arcgis/core/Map";
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
+	import * as coordinateFormatter from "@arcgis/core/geometry/coordinateFormatter";
+	import * as projection from "@arcgis/core/geometry/projection";
 	import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 	import MapView from "@arcgis/core/views/MapView";
 	import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
@@ -35,9 +37,9 @@
 		/**
 		 * Initialize application
 		 */
-		// BaseMap Doesnt work? 
+		// BaseMap Doesnt work?
 		 //const featureLayerUrl = 'https://api.os.uk/maps/vector/v1/vts';
-		 // 
+		 //
 		 const featureLayerUrl = 'https://api.os.uk/maps/vector/v1/vts/boundaries';
 		 const apiKey = "YkfoTGHpgZueZ0ZbqzgVAphuc0yjUUeK";
 
@@ -77,29 +79,33 @@
         });
 
 		const map = new ArcGISMap({
-			layers: [ tileLayer ]
+			basemap: "streets-vector",
+		});
+		 view = new MapView({
+			map,
+			container: "viewDiv",
+			extent: {
+				spatialReference: {
+					wkid: 102100,
+				},
+				xmax: -13581772,
+				xmin: -13584170,
+				ymax: 4436367,
+				ymin: 4435053,
+			},
+			zoom: 12,
+			center: [ -2.968, 54.425 ],
+			constraints: {
+				minZoom: 7,
+				maxZoom: 20,
+				rotationEnabled: false
+			}
 		});
 
-        view = new MapView({
-          container: "viewDiv",
-          map: map,
-          zoom: 10,
-          center: new Point({
-            x: 337297,
-            y: 503995,
-            spatialReference: new SpatialReference({ wkid: 27700 })
-          }),
-          constraints: {
-            minZoom: 2,
-            maxZoom: 15,
-            rotationEnabled: false
-          }
-        });
 
-	
 		// Event Handlers
-		
-		// Setup Drag event listener 
+
+		// Setup Drag event listener
 		var viewDrag = view.on("drag", (value) => {
 			viewDrag.remove();
 			view.stopPropagation();
@@ -107,20 +113,55 @@
 
 		var viewClick = view.on("click", (value) => {
 			// Can do stuff on view click event
-
+			// window.alert(JSON.stringify(value));
 		} )
 	});
 	// Need to work out some acceleration
 	// Maybe import the characters location and compare coords
-		function moveMap(x, y) {
+		function moveMap(x, y) 
+		{
+			x = x + (x * moveSpeed)
+			y = y + (y * moveSpeed)
 			var point = view.toMap({ x: x, y: y });
-			latitude = point.y;
-			longitude = point.x;
+			updateLatLong(point);
 			view.goTo(point);
 		}
 
-		function difference(a, b) { 
-			return Math.abs(a - b); 
+		function updateLatLong(point)
+		{
+			// Project our point to another spatial refence using  well-known ID of Spatial refeernce scheme WGS84
+			let outSpatialReference = {
+					wkid: 4326
+					};
+					
+			let projectedPoint = projection.project(point, outSpatialReference);
+
+			coordinateFormatter.load().then((value) => {
+				// Returned in format eg  55.94N 003.16W
+				// https://developers.arcgis.com/javascript/3/jsapi/esri.geometry.coordinateformatter-amd.html#tolatitudelongitude
+				let latLongString = coordinateFormatter.toLatitudeLongitude(projectedPoint, 'dd', 2);
+				window.alert(latLongString);
+				// We need to convert this to pure decimal represntation, ie S and W are negatives
+				let latLongArray = latLongString.split(" ");
+				let latString = latLongArray[0].slice(0, latLongArray[0].length-1)
+				let longString = latLongArray[1].slice(0, latLongArray[1].length-1)
+
+				if(latLongString.includes("S"))
+					latString = "-".concat(latString)
+
+				if(latLongString.includes("W"))
+					longString = "-".concat(longString)
+
+				latitude = latString;
+				longitude = longString;
+			}, (error) =>{
+				latitude = "ERROR LOADING FROM MAP";
+				longitude = "ERROR LOADING FROM MAP";
+			})
+		}
+
+		function difference(a, b) {
+			return Math.abs(a - b);
 		}
 
 		function handleMouseMove ({ clientX, clientY }) {
@@ -140,24 +181,25 @@
 			// window.alert(JSON.stringify(mouse));
 			let goToX = clientX + (clientX * moveSpeed);
 			let goToY = clientY + (clientY * moveSpeed);
-			var point = view.toMap({ x: clientX, y: clientY });
+			var point = view.toMap({ x: goToX, y: goToY });
+			updateLatLong(point);
 			view.goTo(point);
 		}
 
-		
+
 		function handleMouseDown ({ clientX, clientY }) {
 			mouseDown = true;
 			startX = clientX;
 			startY = clientY;
 			handleMouseMove({ clientX, clientY });
 		}
-		
+
 		function handleMouseUp (ev) {
 			mouseDown = false;
 			handleMouseMoveComplete(ev);
 		}
 
-	
+
 </script>
 
 <style>
