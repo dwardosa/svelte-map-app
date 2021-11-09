@@ -2,7 +2,12 @@
 	import FeatureLayer from "@arcgis/core/layers/FeatureLayer";
 	import ArcGISMap from "@arcgis/core/Map";
 	import DictionaryRenderer from "@arcgis/core/renderers/DictionaryRenderer";
+	import * as coordinateFormatter from "@arcgis/core/geometry/coordinateFormatter";
+	import * as projection from "@arcgis/core/geometry/projection";
+	import SpatialReference from "@arcgis/core/geometry/SpatialReference";
 	import MapView from "@arcgis/core/views/MapView";
+	import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer";
+	import esriConfig from "@arcgis/core/config";
 	import Point from "@arcgis/core/geometry/Point";
 	import { onMount } from "svelte";
 	import { width, height } from './game.js';
@@ -32,10 +37,50 @@
 		/**
 		 * Initialize application
 		 */
-		const map = new ArcGISMap({
-			basemap: "gray-vector",
+		// BaseMap Doesnt work?
+		 //const featureLayerUrl = 'https://api.os.uk/maps/vector/v1/vts';
+		 //
+		 const featureLayerUrl = 'https://api.os.uk/maps/vector/v1/vts/boundaries';
+		 const apiKey = "YkfoTGHpgZueZ0ZbqzgVAphuc0yjUUeK";
+
+		esriConfig.request.interceptors.push({
+		// set the `urls` property to the URL of the FeatureLayer so that this
+		// interceptor only applies to requests made to the FeatureLayer URL
+		urls: featureLayerUrl,
+		headers: {    "key": apiKey  },
+		// use the BeforeInterceptorCallback to check if the query of the
+		// FeatureLayer has a maxAllowableOffset property set.
+		// if so, then set the maxAllowableOffset to 0
+		before: function(params) {
+
+			if(! params.requestOptions.query ) {
+				params.requestOptions.query = {};
+			}
+
+			// params.requestOptions.query.key = apiKey;
+			// params.requestOptions.query.srs = 3857;
+
+			if (params.requestOptions.query.maxAllowableOffset) {
+				params.requestOptions.query.maxAllowableOffset = 0;
+			}
+		},
+		// use the AfterInterceptorCallback to check if `ssl` is set to 'true'
+		// on the response to the request, if it's set to 'false', change
+		// the value to 'true' before returning the response
+		after: function(response) {
+			if (!response.ssl) {
+			response.ssl = true;
+			}
+		}
 		});
 
+		var tileLayer = new VectorTileLayer({
+          url: featureLayerUrl
+        });
+
+		const map = new ArcGISMap({
+			basemap: "streets-vector",
+		});
 		 view = new MapView({
 			map,
 			container: "viewDiv",
@@ -48,100 +93,19 @@
 				ymax: 4436367,
 				ymin: 4435053,
 			},
+			zoom: 10,
+			center: [ -2.968, 54.425 ],
+			constraints: {
+				minZoom: 7,
+				maxZoom: 20,
+				rotationEnabled: false
+			}
 		});
 
-		const popupTemplate = {
-			// autocasts as new PopupTemplate()
-			title: "station: {Station_Name}",
-			content: [
-				{
-					// It is also possible to set the fieldInfos outside of the content
-					// directly in the popupTemplate. If no fieldInfos is specifically set
-					// in the content, it defaults to whatever may be set within the popupTemplate.
-					type: "fields",
-					fieldInfos: [
-						{
-							fieldName: "Fuel_Type_Code",
-							label: "Fuel type",
-						},
-						{
-							fieldName: "EV_Network",
-							label: "EV network",
-						},
-						{
-							fieldName: "EV_Connector_Types",
-							label: "EV connection types",
-						},
-						{
-							fieldName: "Station_Name",
-							label: "Station Name",
-						},
-					],
-				},
-			],
-		};
-
-		const scale = 36112;
-		const layer1 = new FeatureLayer({
-			url:
-				"https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Alternative_Fuel_Station_March2018/FeatureServer",
-			outFields: ["*"],
-			popupTemplate,
-			renderer: new DictionaryRenderer({
-				url:
-					"https://jsapi.maps.arcgis.com/sharing/rest/content/items/30cfbf36efd64ccf92136201d9e852af",
-				fieldMap: {
-					fuel_type: "Fuel_Type_Code",
-				},
-				config: {
-					show_label: "false",
-				},
-				visualVariables: [
-					{
-						type: "size",
-						valueExpression: "$view.scale",
-						stops: [
-							{ value: scale / 2, size: 20 },
-							{ value: scale * 2, size: 15 },
-							{ value: scale * 4, size: 10 },
-							{ value: scale * 8, size: 5 },
-							{ value: scale * 16, size: 2 },
-							{ value: scale * 32, size: 1 },
-						],
-					},
-				],
-			}),
-			minScale: 0,
-			maxScale: 10000,
-		});
-
-		const layer2 = new FeatureLayer({
-			url:
-				"https://services1.arcgis.com/4yjifSiIG17X0gW4/arcgis/rest/services/Alternative_Fuel_Station_March2018/FeatureServer",
-			outFields: ["*"],
-			popupTemplate,
-			renderer: new DictionaryRenderer({
-				url:
-					"https://jsapi.maps.arcgis.com/sharing/rest/content/items/30cfbf36efd64ccf92136201d9e852af",
-				fieldMap: {
-					fuel_type: "Fuel_Type_Code",
-					connector_types: "EV_Connector_Types",
-					network: "EV_Network",
-					name: "Station_Name",
-				},
-				config: {
-					show_label: "true",
-				},
-			}),
-			minScale: 10000,
-			maxScale: 0,
-		});
-
-		map.addMany([layer1, layer2]);
 
 		// Event Handlers
-		
-		// Setup Drag event listener 
+
+		// Setup Drag event listener
 		var viewDrag = view.on("drag", (value) => {
 			viewDrag.remove();
 			view.stopPropagation();
@@ -149,20 +113,53 @@
 
 		var viewClick = view.on("click", (value) => {
 			// Can do stuff on view click event
-
+			// window.alert(JSON.stringify(value));
 		} )
 	});
 	// Need to work out some acceleration
 	// Maybe import the characters location and compare coords
-		function moveMap(x, y) {
+		function moveMap(x, y) 
+		{
+			x = x + (x * moveSpeed)
+			y = y + (y * moveSpeed)
 			var point = view.toMap({ x: x, y: y });
-			latitude = point.y;
-			longitude = point.x;
+			updateLatLong(point);
 			view.goTo(point);
 		}
 
-		function difference(a, b) { 
-			return Math.abs(a - b); 
+		function updateLatLong(point)
+		{
+			// Project our point to another spatial refence using  well-known ID of Spatial refeernce scheme WGS84
+			let outSpatialReference = {
+					wkid: 4326
+					};				
+			let projectedPoint = projection.project(point, outSpatialReference);
+
+			coordinateFormatter.load().then((value) => {
+				// Returned in format eg  55.94N 003.16W
+				// https://developers.arcgis.com/javascript/3/jsapi/esri.geometry.coordinateformatter-amd.html#tolatitudelongitude
+				let latLongString = coordinateFormatter.toLatitudeLongitude(projectedPoint, 'dd', 2);
+				// We need to convert this to pure decimal represntation, ie S and W are negatives
+				let latLongArray = latLongString.split(" ");
+				let latString = latLongArray[0].slice(0, latLongArray[0].length-1)
+				let longString = latLongArray[1].slice(0, latLongArray[1].length-1)
+
+				if(latLongString.includes("S"))
+					latString = "-".concat(latString)
+
+				if(latLongString.includes("W"))
+					longString = "-".concat(longString)
+
+				latitude = latString;
+				longitude = longString;
+			}, (error) =>{
+				latitude = "ERROR LOADING FROM MAP";
+				longitude = "ERROR LOADING FROM MAP";
+			})
+		}
+
+		function difference(a, b) {
+			return Math.abs(a - b);
 		}
 
 		function handleMouseMove ({ clientX, clientY }) {
@@ -179,27 +176,23 @@
 		// Creating a ScreenPoint based of clients X, Y values passed in the event and moving map
 		function handleMouseMoveComplete({ clientX, clientY }) {
 			mouse = [ clientX, clientY ];
-			// window.alert(JSON.stringify(mouse));
-			let goToX = clientX + (clientX * moveSpeed);
-			let goToY = clientY + (clientY * moveSpeed);
-			var point = view.toMap({ x: clientX, y: clientY });
-			view.goTo(point);
+			moveMap(clientX, clientY)
 		}
 
-		
+
 		function handleMouseDown ({ clientX, clientY }) {
 			mouseDown = true;
 			startX = clientX;
 			startY = clientY;
 			handleMouseMove({ clientX, clientY });
 		}
-		
+
 		function handleMouseUp (ev) {
 			mouseDown = false;
 			handleMouseMoveComplete(ev);
 		}
 
-	
+
 </script>
 
 <style>

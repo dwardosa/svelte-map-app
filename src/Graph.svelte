@@ -4,6 +4,7 @@
 
 	export let title = '';
 	export let yPosition = 0;
+	export let location = '';
 	export let localData = '';
 	export let nationalData = '';
 </script>
@@ -16,7 +17,7 @@
     x={$width - 20}
     y={yPosition} />
 <Text
-    text='Locally: {localData}'
+    text='{location}: {localData}'
     fontSize={12}
     align='right'
     baseline='bottom'

@@ -6,16 +6,29 @@ const year = "2019";
 
 export async function getLocationData(longitude, latitude) {
     const address = await getLocationAddress(longitude, latitude);
+    const { county, state_district, city } = address;
+    let locationData = data.find(i => i.LA === city && i.Year === year);
 
-    const { county, state_district } = address;
-    const locationData = data.find(i => i.LA === county && i.Year === year);
+    // Adding a fall back to wider county if no city data found
+    if (typeof locationData == "undefined")
+    {
+        locationData = data.find(i => i.LA === county && i.Year === year);
+        return formatData(locationData, county);
+    }
 
-    return formatData(locationData);
+    // Adding a fall back to wider Region if no county data found
+    if (typeof locationData == "undefined")
+    {
+        locationData = data.find(i => i.Region === state_district && i.Year === year);
+        return formatData(locationData, state_district);
+    }
+    
+    return formatData(locationData, city);
 }
 
 export function getNationalAverageData() {
     const nationalData = data.find(i => i.LA === "All local authorities" && i.Year === year);
-    return formatData(nationalData);
+    return formatData(nationalData, "National Average");
 }
 
 async function getLocationAddress(longitude, latitude) {
@@ -23,7 +36,7 @@ async function getLocationAddress(longitude, latitude) {
     return res.data.address;
 }
 
-function formatData(data) {
+function formatData(data, location) {
     if (!data) {
         return null;
     }
@@ -36,6 +49,7 @@ function formatData(data) {
     const percentageBioenergy = ((parseFloat(data.Bioenergy_and_wastes_Total) / parseFloat(data.All_fuels_Total)) * 100).toFixed(2) + " %";
 
     const formattedData = { 
+        location,
         percentageCoal,
         percentageManufactured,
         percentagePetroleum,
