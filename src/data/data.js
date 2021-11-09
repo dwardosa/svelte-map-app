@@ -5,25 +5,31 @@ const { data } = json;
 const year = "2019";
 
 export async function getLocationData(longitude, latitude) {
-    const address = await getLocationAddress(longitude, latitude);
-    const { county, state_district, city } = address;
-    let locationData = data.find(i => i.LA === city && i.Year === year);
+    try {
+        const address = await getLocationAddress(longitude, latitude);
+        const { county, state_district, city } = address;
 
-    // Adding a fall back to wider county if no city data found
-    if (typeof locationData == "undefined")
-    {
-        locationData = data.find(i => i.LA === county && i.Year === year);
-        return formatData(locationData, county);
-    }
+        let locationData = data.find(i => i.LA === city && i.Year === year);
+        let location = city;
 
-    // Adding a fall back to wider Region if no county data found
-    if (typeof locationData == "undefined")
-    {
-        locationData = data.find(i => i.Region === state_district && i.Year === year);
-        return formatData(locationData, state_district);
+        // Adding a fall back to wider county if no city data found
+        if (typeof locationData == "undefined") {
+            locationData = data.find(i => i.LA === county && i.Year === year);
+            location = county;
+        }
+
+        // Adding a fall back to wider Region if no county data found
+        if (typeof locationData == "undefined") {
+            locationData = data.find(i => i.Region === state_district && i.Year === year);
+            location = state_district;
+        }
+        
+        return formatData(locationData, location);
+
+    } catch(err) {
+        return formatData(null, null);
     }
     
-    return formatData(locationData, city);
 }
 
 export function getNationalAverageData() {
@@ -38,15 +44,23 @@ async function getLocationAddress(longitude, latitude) {
 
 function formatData(data, location) {
     if (!data) {
-        return null;
+        return { 
+            location: 'Unknown',
+            percentageCoal: 0,
+            percentageManufactured: 0,
+            percentagePetroleum: 0,
+            percentageGas: 0,
+            percentageElectricity: 0,
+            percentageBioenergy: 0
+        };
     }
 
-    const percentageCoal = ((parseFloat(data.Coal_Total) / parseFloat(data.All_fuels_Total)) * 100).toFixed(2) + " %";
-    const percentageManufactured = ((parseFloat(data.Manufactured_fuels_Total) / parseFloat(data.All_fuels_Total)) * 100).toFixed(2) + " %";
-    const percentagePetroleum = ((parseFloat(data.Petroleum_Total) / parseFloat(data.All_fuels_Total)) * 100).toFixed(2) + " %";
-    const percentageGas = ((parseFloat(data.Gas_Total) / parseFloat(data.All_fuels_Total)) * 100).toFixed(2) + " %";
-    const percentageElectricity = ((parseFloat(data.Electricty_Total) / parseFloat(data.All_fuels_Total)) * 100).toFixed(2) + " %";
-    const percentageBioenergy = ((parseFloat(data.Bioenergy_and_wastes_Total) / parseFloat(data.All_fuels_Total)) * 100).toFixed(2) + " %";
+    const percentageCoal = (parseFloat(data.Coal_Total) / parseFloat(data.All_fuels_Total)) * 100;
+    const percentageManufactured = (parseFloat(data.Manufactured_fuels_Total) / parseFloat(data.All_fuels_Total)) * 100;
+    const percentagePetroleum = (parseFloat(data.Petroleum_Total) / parseFloat(data.All_fuels_Total)) * 100;
+    const percentageGas = (parseFloat(data.Gas_Total) / parseFloat(data.All_fuels_Total)) * 100;
+    const percentageElectricity = (parseFloat(data.Electricty_Total) / parseFloat(data.All_fuels_Total)) * 100;
+    const percentageBioenergy = (parseFloat(data.Bioenergy_and_wastes_Total) / parseFloat(data.All_fuels_Total)) * 100;
 
     const formattedData = { 
         location,
