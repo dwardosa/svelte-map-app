@@ -93,7 +93,7 @@
 				ymax: 4436367,
 				ymin: 4435053,
 			},
-			zoom: 12,
+			zoom: 10,
 			center: [ -2.968, 54.425 ],
 			constraints: {
 				minZoom: 7,

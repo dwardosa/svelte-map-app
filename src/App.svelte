@@ -9,8 +9,8 @@
 	import Map from './Map.svelte';
 	import Graphs from './Graphs.svelte';
 
-	let longitude = '';
-	let latitude = '';
+	let longitude = -2.968;
+	let latitude = 54.425;
 </script>
 
 <Canvas>
@@ -42,8 +42,8 @@
 		x={20}
 		y={160} />
 	<Graphs 
-		longitude={-4.1427} 
-		latitude={50.3755} />
+		longitude={longitude} 
+		latitude={latitude} />
 	<FPS />
 	<Map bind:longitude bind:latitude></Map>
 </Canvas>
